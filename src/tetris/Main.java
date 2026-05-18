@@ -1,0 +1,34 @@
+package tetris;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+public class Main {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                GameEngine engine = new GameEngine();
+                GamePanel panel = new GamePanel(engine);
+      
+                engine.setPanel(panel);
+
+                JFrame frame = new JFrame("Java Tetris");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setResizable(true); 
+
+                frame.add(panel);
+                frame.addKeyListener(new InputHandler(engine, panel));
+
+            
+                frame.pack(); 
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+
+                engine.start();
+            }
+        });
+    }
+}
+
+
