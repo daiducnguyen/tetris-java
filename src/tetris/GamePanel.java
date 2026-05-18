@@ -13,12 +13,13 @@ import java.awt.event.MouseEvent;
 import java.awt.Rectangle;
 import javax.swing.JPanel;
 
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements GameListener {
     private final GameEngine engine;
     private Rectangle buttonBounds;
 
     public GamePanel(GameEngine engine) {
         this.engine = engine;
+        this.engine.addListener(this);
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
 
@@ -48,6 +49,11 @@ public class GamePanel extends JPanel {
                 }
             }
         });
+    }
+
+    @Override
+    public void onGameUpdated() {
+        repaint();
     }
 
     @Override

@@ -39,7 +39,6 @@ public class Tetromino {
             int oldRow = relativeCoords[i][0];
             int oldCol = relativeCoords[i][1];
             
-            // Apply rotation math: New Row = Col, New Column = -Row
             rotatedCoords[i][0] = oldCol;
             rotatedCoords[i][1] = -oldRow;
         }

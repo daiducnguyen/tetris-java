@@ -3,15 +3,16 @@ package tetris;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Timer;
 
 public class GameEngine {
     private final Grid grid;
     private Tetromino currentPiece;
     private final Timer gameTimer;
-    private final Random random;
-    private GamePanel panel;
+    private final TetrominoFactory factory;
+    private final List<GameListener> listeners;
 
     private int score;
     private GameState state;
@@ -19,7 +20,8 @@ public class GameEngine {
 
     public GameEngine() {
         this.grid = new Grid();
-        this.random = new Random();
+        this.factory = new TetrominoFactory();
+        this.listeners = new ArrayList<>();
         this.score = 0;
         this.state = GameState.WAITING;
 
@@ -31,8 +33,14 @@ public class GameEngine {
         });
     }
 
-    public void setPanel(GamePanel panel) {
-        this.panel = panel;
+    public void addListener(GameListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyListeners() {
+        for (GameListener listener : listeners) {
+            listener.onGameUpdated();
+        }
     }
 
     public void start() {
@@ -40,7 +48,7 @@ public class GameEngine {
         state = GameState.PLAYING;
         spawnNewPiece();
         gameTimer.start();
-        if (panel != null) panel.repaint();
+        notifyListeners();
     }
 
     public void reset() {
@@ -49,7 +57,7 @@ public class GameEngine {
         score = 0;
         currentPiece = null;
         state = GameState.WAITING;
-        if (panel != null) panel.repaint();
+        notifyListeners();
     }
 
     public void pause() {
@@ -61,15 +69,10 @@ public class GameEngine {
             return;
         }
         movePieceDown();
-        if (panel != null) {
-            panel.repaint();
-        }
     }
 
     private void spawnNewPiece() {
-        ShapeType[] shapes = ShapeType.values();
-        ShapeType randomShape = shapes[random.nextInt(shapes.length)];
-        currentPiece = new Tetromino(randomShape);
+        currentPiece = factory.createRandom();
 
         if (!isValidPosition()) {
             state = GameState.GAME_OVER;
@@ -83,9 +86,10 @@ public class GameEngine {
         currentPiece.moveDown();
 
         if (!isValidPosition()) {
-            currentPiece.moveUp(); 
-            lockCurrentPiece();     
+            currentPiece.moveUp();
+            lockCurrentPiece();
         }
+        notifyListeners();
     }
 
     public void movePieceLeft() {
@@ -93,8 +97,9 @@ public class GameEngine {
 
         currentPiece.moveLeft();
         if (!isValidPosition()) {
-            currentPiece.moveRight(); 
+            currentPiece.moveRight();
         }
+        notifyListeners();
     }
 
     public void movePieceRight() {
@@ -102,8 +107,9 @@ public class GameEngine {
 
         currentPiece.moveRight();
         if (!isValidPosition()) {
-            currentPiece.moveLeft(); 
+            currentPiece.moveLeft();
         }
+        notifyListeners();
     }
 
     public void rotatePiece() {
@@ -113,6 +119,7 @@ public class GameEngine {
         if (!isValidPosition()) {
             currentPiece.rotateCounterClockwise();
         }
+        notifyListeners();
     }
 
     public void hardDrop() {
@@ -121,8 +128,9 @@ public class GameEngine {
         while (isValidPosition()) {
             currentPiece.moveDown();
         }
-        currentPiece.moveUp(); 
+        currentPiece.moveUp();
         lockCurrentPiece();
+        notifyListeners();
     }
 
     private boolean isValidPosition() {

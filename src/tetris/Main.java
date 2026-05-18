@@ -10,15 +10,13 @@ public class Main {
             public void run() {
                 GameEngine engine = new GameEngine();
                 GamePanel panel = new GamePanel(engine);
-      
-                engine.setPanel(panel);
 
                 JFrame frame = new JFrame("Java Tetris");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setResizable(true); 
 
                 frame.add(panel);
-                panel.addKeyListener(new InputHandler(engine, panel));
+                panel.addKeyListener(new InputHandler(engine));
 
                 frame.pack();
                 frame.setLocationRelativeTo(null);
