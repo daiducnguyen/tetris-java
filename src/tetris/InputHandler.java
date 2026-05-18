@@ -14,7 +14,7 @@ public class InputHandler extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (engine.isGameOver()) {
+        if (engine.getState() != GameState.PLAYING) {
             return;
         }
 

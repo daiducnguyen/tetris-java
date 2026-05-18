@@ -14,14 +14,14 @@ public class GameEngine {
     private GamePanel panel;
 
     private int score;
-    private boolean isGameOver;
+    private GameState state;
 
 
     public GameEngine() {
         this.grid = new Grid();
         this.random = new Random();
         this.score = 0;
-        this.isGameOver = false;
+        this.state = GameState.WAITING;
 
         this.gameTimer = new Timer(600, new ActionListener() {
             @Override
@@ -29,8 +29,6 @@ public class GameEngine {
                 updateGame();
             }
         });
-        
-        spawnNewPiece();
     }
 
     public void setPanel(GamePanel panel) {
@@ -38,7 +36,20 @@ public class GameEngine {
     }
 
     public void start() {
+        if (state != GameState.WAITING) return;
+        state = GameState.PLAYING;
+        spawnNewPiece();
         gameTimer.start();
+        if (panel != null) panel.repaint();
+    }
+
+    public void reset() {
+        gameTimer.stop();
+        grid.clearAll();
+        score = 0;
+        currentPiece = null;
+        state = GameState.WAITING;
+        if (panel != null) panel.repaint();
     }
 
     public void pause() {
@@ -46,7 +57,7 @@ public class GameEngine {
     }
 
     private void updateGame() {
-        if (isGameOver) {
+        if (state != GameState.PLAYING) {
             return;
         }
         movePieceDown();
@@ -61,13 +72,13 @@ public class GameEngine {
         currentPiece = new Tetromino(randomShape);
 
         if (!isValidPosition()) {
-            isGameOver = true;
+            state = GameState.GAME_OVER;
             gameTimer.stop();
         }
     }
 
     public void movePieceDown() {
-        if (isGameOver) return;
+        if (state != GameState.PLAYING) return;
 
         currentPiece.moveDown();
 
@@ -78,7 +89,7 @@ public class GameEngine {
     }
 
     public void movePieceLeft() {
-        if (isGameOver) return;
+        if (state != GameState.PLAYING) return;
 
         currentPiece.moveLeft();
         if (!isValidPosition()) {
@@ -87,7 +98,7 @@ public class GameEngine {
     }
 
     public void movePieceRight() {
-        if (isGameOver) return;
+        if (state != GameState.PLAYING) return;
 
         currentPiece.moveRight();
         if (!isValidPosition()) {
@@ -96,7 +107,7 @@ public class GameEngine {
     }
 
     public void rotatePiece() {
-        if (isGameOver) return;
+        if (state != GameState.PLAYING) return;
 
         currentPiece.rotateClockwise();
         if (!isValidPosition()) {
@@ -105,7 +116,7 @@ public class GameEngine {
     }
 
     public void hardDrop() {
-        if (isGameOver) return;
+        if (state != GameState.PLAYING) return;
 
         while (isValidPosition()) {
             currentPiece.moveDown();
@@ -167,6 +178,7 @@ public class GameEngine {
     public Grid getGrid() { return grid; }
     public Tetromino getCurrentPiece() { return currentPiece; }
     public int getScore() { return score; }
-    public boolean isGameOver() { return isGameOver; }
+    public GameState getState() { return state; }
+    public boolean isGameOver() { return state == GameState.GAME_OVER; }
 }
 

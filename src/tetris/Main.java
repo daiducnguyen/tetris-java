@@ -18,14 +18,13 @@ public class Main {
                 frame.setResizable(true); 
 
                 frame.add(panel);
-                frame.addKeyListener(new InputHandler(engine, panel));
+                panel.addKeyListener(new InputHandler(engine, panel));
 
-            
-                frame.pack(); 
+                frame.pack();
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
 
-                engine.start();
+                panel.requestFocusInWindow();
             }
         });
     }
