@@ -11,6 +11,7 @@ public class GameEngine {
     private Tetromino currentPiece;
     private final Timer gameTimer;
     private final Random random;
+    private GamePanel panel;
 
     private int score;
     private boolean isGameOver;
@@ -32,6 +33,10 @@ public class GameEngine {
         spawnNewPiece();
     }
 
+    public void setPanel(GamePanel panel) {
+        this.panel = panel;
+    }
+
     public void start() {
         gameTimer.start();
     }
@@ -45,6 +50,9 @@ public class GameEngine {
             return;
         }
         movePieceDown();
+        if (panel != null) {
+            panel.repaint();
+        }
     }
 
     private void spawnNewPiece() {
