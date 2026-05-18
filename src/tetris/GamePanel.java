@@ -25,7 +25,7 @@ public class GamePanel extends JPanel implements GameListener {
 
         addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 if (buttonBounds != null && buttonBounds.contains(e.getPoint())) {
                     GameState state = engine.getState();
                     if (state == GameState.WAITING) {
